@@ -58,3 +58,12 @@
   });
 
 })(jQuery); // End of use strict
+
+
+function changeQty(delta) {
+  let field = document.getElementById('qty');
+  let value = parseInt(field.value);
+  if (value + delta >= 1) {
+    field.value = value + delta;
+  }
+}

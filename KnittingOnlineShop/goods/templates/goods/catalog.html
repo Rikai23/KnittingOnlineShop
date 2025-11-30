@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block local_css %}
+    <link rel="stylesheet" href="{% static 'css/my_style.css' %}">
+{% endblock local_css %}
+
+{% block content %}
+<section id="catalog" style="height: auto;padding: 95px 0px;">
+        <div class="container">
+            <div class="row">
+                <!-- Панель фильтров -->
+                <div class="container my-4">
+                    <div class="card p-3">
+
+                        <form method="get" class="row gy-2 gx-3 align-items-center">
+
+                            <!-- Категории -->
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold mb-2">Категории:</label>
+                                <div class="btn-group flex-wrap" role="group">
+
+                                    <a href="?category=all"
+                                       class="btn btn-outline-primary {% if request.GET.category == 'all' or not request.GET.category %}active{% endif %}">
+                                        Все
+                                    </a>
+
+                                    <a href="?category=toys"
+                                       class="btn btn-outline-primary {% if request.GET.category == 'toys' %}active{% endif %}">
+                                        Игрушки
+                                    </a>
+
+                                    <a href="?category=bags"
+                                       class="btn btn-outline-primary {% if request.GET.category == 'bags' %}active{% endif %}">
+                                        Сумки
+                                    </a>
+
+                                    <a href="?category=clothes"
+                                       class="btn btn-outline-primary {% if request.GET.category == 'clothes' %}active{% endif %}">
+                                        Одежда
+                                    </a>
+
+                                    <a href="?category=keychains"
+                                       class="btn btn-outline-primary {% if request.GET.category == 'keychains' %}active{% endif %}">
+                                        Брелки
+                                    </a>
+
+                                    <a href="?category=sale"
+                                       class="btn btn-outline-danger {% if request.GET.category == 'sale' %}active{% endif %}">
+                                        Распродажа
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Сортировка -->
+                            <div class="col-md-4">
+                                <label for="sort" class="form-label fw-semibold">Сортировка:</label>
+                                <select name="sort" id="sort" class="form-select" onchange="this.form.submit()">
+                                    <option value="">Без сортировки</option>
+                                    <option value="date_desc" {% if request.GET.sort == 'date_desc' %}selected{% endif %}>
+                                        По дате (новые → старые)
+                                    </option>
+                                    <option value="date_asc" {% if request.GET.sort == 'date_asc' %}selected{% endif %}>
+                                        По дате (старые → новые)
+                                    </option>
+                                </select>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                {% for product in goods %}
+                    <!-- Карта товара -->
+                    <div class="col-md-6 col-lg-4 text-center mb-4">
+                        <div class="card p-3">
+                            <img src="{% static product.image %}" class="card-img-top"  style="height: 350px; object-fit: cover;" alt="...">
+                            <div class="card-body">
+                                <a href="{% url 'catalog:product' %}">
+                                    <p class="card-title">{{ product.name }}</p>
+                                </a>
+                                <p class="card-text text-truncate">
+                                    {{ product.description }}
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    {% comment %} <p><s>2000</s> ₽</p>
+                                    <p><strong>1800 ₽</strong></p>
+                                    <span class="badge bg-warning text-dark">Скидка 10.00 %</span> {% endcomment %}
+                                    <p><strong>{{ product.price }} ₽</strong></p>
+                                    <a href="#" class="btn add-to-cart">
+                                        <img class="mx-1" src="{% static 'deps/icons/cart-plus.svg' %}" alt="Catalog Icon"
+                                             width="32" height="32">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    <!-- Пагинация -->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center my-4">
+            <div class="custom-shadow d-flex">
+                <li class="page-item disabled">
+                    <a class="page-link">Пред.</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">След.</a>
+                </li>
+            </div>
+        </ul>
+    </nav>
+</section>
+{% endblock content %}
