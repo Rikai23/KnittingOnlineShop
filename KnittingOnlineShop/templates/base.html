@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load goods_tags %}
 <html lang="ru">
 
 <head>
@@ -31,7 +32,7 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'main:index' %}#about">Информация</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'main:index' %}#delivery">Доставка</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'catalog:index' %}#catalog">Каталог</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'catalog:index' 'all' %}">Каталог</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="{% url 'main:index' %}#contact">Контакты</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'main:index' %}#basket">Корзина</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'main:index' %}#account">Войти</a></li>
@@ -39,6 +40,8 @@
             </div>
         </div>
     </nav>
+
+    {% tag_categories as categories %}
 
     {% block content %}{% endblock content %}
     {% block footer %}{% endblock footer%}

@@ -1,44 +1,57 @@
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import render
 
+from goods.models import Products, Categories
 
-def catalog(request):
+
+def catalog(request, category_slug=None):
+
+    page = request.GET.get('page', 1)
+    sort = request.GET.get('sort', None)
+    query = request.GET.get('q', '').strip()
+
+    if category_slug == 'all':
+        goods = Products.objects.all()
+        category_name = "Все товары"
+    elif category_slug == 'sale':
+        goods = Products.objects.filter(discount__gt=0)
+        category_name = "Распродажа"
+    else:
+        goods = Products.objects.filter(category__slug=category_slug)
+        if not goods.exists():
+            raise Http404("Товары для этой категории не найдены")
+        category = Categories.objects.get(slug=category_slug)
+        category_name = category.name
+
+    if query:
+        goods = goods.filter(Q(name__icontains=query) | Q(description__icontains=query))
+
+    if sort == 'date_desc':
+        goods = goods.order_by('-id')  # новые → старые
+    elif sort == 'date_asc':
+        goods = goods.order_by('id')  # старые → новые
+
+    paginator = Paginator(goods, 9)
+    current_page = paginator.page(int(page))
+
     context = {
-        'title': 'Каталог',
-        'categories': [
-            {'name': 'Игрушки'},
-            {'name': 'Сумки'},
-            {'name': 'Одежда'},
-            {'name': 'Брелки'},
-            {'name': 'Распродажа'}
-        ],
-        'goods': [
-            {'image': 'images/bunny_product_1.jpg',
-             'name': 'Милый зайчик',
-             'description': 'Мягкий и уютный зайка, связанный вручную из гипоаллергенной плюшевой пряжи. Идеальный подарок для детей и милое украшение интерьера.',
-             'price': 2000.00},
-            {'image': 'images/doll_product_2.jpg',
-             'name': "Кукла 'Тильда'",
-             'description': 'Очень модна кукла. Вариант подарка для юных принцесс.',
-             'price': 3200.00},
-            {'image': 'images/labubu_product_3.jpg',
-             'name': 'Лабубу',
-             'description': 'Этот вязаный Лабубу выполнен вручную в технике амигуруми. Уютный, пушистый и невероятно милый, он легко станет любимым талисманом или украшением комнаты.',
-             'price': 3500.00},
-        ]
-
+        'title': category_name,
+        'goods': current_page,
+        'category_slug': category_slug,
+        'search_query': query,
+        'sort_value': sort,
     }
     return render(request, 'goods/catalog.html', context)
 
-def product(request):
+def product(request, product_slug):
+
+    product = Products.objects.get(slug=product_slug)
+
     context = {
-        "name": "Лабубу",
-        'description': 'Этот вязаный Лабубу выполнен вручную в технике амигуруми. Уютный, пушистый и невероятно милый, он легко станет любимым талисманом или украшением комнаты.',
-        "price": 3500,
-        "images": [
-            {"url": "images/bunny_product_1.jpg"},
-            {"url": "images/doll_product_2.jpg"},
-            {"url": "images/labubu_product_3.jpg"},
-        ]
+        'title': product.name,
+        "product": product,
     }
     return render(request, 'goods/product.html', context)
 

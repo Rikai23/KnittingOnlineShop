@@ -61,9 +61,14 @@
 
 
 function changeQty(delta) {
-  let field = document.getElementById('qty');
-  let value = parseInt(field.value);
-  if (value + delta >= 1) {
-    field.value = value + delta;
-  }
+    const input = document.getElementById('qty');
+    const max = parseInt(input.max);
+    let value = parseInt(input.value);
+
+    value += delta;
+
+    if (value < 1) value = 1;
+    if (value > max) value = max;
+
+    input.value = value;
 }
